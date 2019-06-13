@@ -1,11 +1,11 @@
 
-unsigned short int Output[7];
+unsigned short int Output[7];//七个输出为1的情况（用于七段线）。short int是16位整数，刚好可以表示16种输入
 unsigned int exp2[16] = {1,2,4,8, 16,32,64,128, 256,512,1024,2048, 4096,8192,16384,32768};
-bool Results[128];
-unsigned short Dubious = 0;
-bool lampValue[32][16]
+bool Results[128];//七个输出的所有线性组合的结果
+unsigned short Dubious = 0;//表示输出随意的情况。用bool数组也许更方便
+bool lampValue[32][16];//lampValue[lamp][input]表示灯上接线为lamp，输入为input时该灯的值。lamp包含一位取反和四位接线
 
-unsigned short int getCombination(unsigned int comb){
+unsigned short int getCombination(unsigned int comb){//例如getCombination(0b1)=Output[0]，getCombination(0b1011)=Output[3]^Output[1]^Output[0]
 	ret = 0;
 	comb = (unsigned short int) comb;
 	for(int i=0;i<7;i++){
@@ -14,7 +14,7 @@ unsigned short int getCombination(unsigned int comb){
 	return ret;
 }
 
-int leastLamps(unsigned short output){
+int leastLamps(unsigned short output){//达到某种输出最少需要多少个灯。暂时认为该答案不会超过4。
 	if(try0(output)) return 0;
 	if(try1(output)) return 1;
 	if(try2(output)) return 2;
@@ -23,11 +23,11 @@ int leastLamps(unsigned short output){
 	return 4;
 }
 
-bool try0(unsigned short output){//�޵��Ƿ�ɽ�
+bool try0(unsigned short output){//无灯是否可解
 	return output | Dubious == 65535 || output & Dubious == 0;
 }
 
-bool try1(unsigned short output){//�����Ƿ�ɽ�
+bool try1(unsigned short output){//单灯是否可解
 	flag1 = false;
 	flag2 = false;
 	for(int lamp1=1;lamp1<32;lamp1++){
@@ -44,9 +44,9 @@ bool try1(unsigned short output){//�����Ƿ�ɽ�
 	return false;
 }
 
-bool try2(unsigned short output){//˫���Ƿ�ɽ�
-	bool lampFail01[32];//lampValueΪ0����outputΪ1
-	bool lampFail10[32];//lampValueΪ1����outputΪ0
+bool try2(unsigned short output){//双灯是否可解
+	bool lampFail01[32];//lampValue为0但是output为1
+	bool lampFail10[32];//lampValue为1但是output为0
 	for(int lamp=1;lamp<32;lamp++){
 		lampFail01[lamp] = false;
 		lampFail10[lamp] = false;
@@ -56,9 +56,9 @@ bool try2(unsigned short output){//˫���Ƿ�ɽ�
 			else if(lampValue[lamp][input] && output & exp2[input] == 0) lampFail10[lamp] = true;
 		}
 	}
-	lampFail01[16] = lampFail10[16] = true; //������lamp=16�����
+	lampFail01[16] = lampFail10[16] = true; //不遍历lamp=16的情况
 	bool flag1 = false;
-	for(int lamp1=1;lamp1<32;lamp1++){//��ȡ�����Եõ����
+	for(int lamp1=1;lamp1<32;lamp1++){//不取反可以得到结果
 		if(lampFail01[lamp1]) continue;
 		for(int lamp2=1;lamp2<31;lamp2++){
 			if(lampFail01[lamp2]) continue;
@@ -73,7 +73,7 @@ bool try2(unsigned short output){//˫���Ƿ�ɽ�
 			if(flag1) return true;
 		}
 	}
-	for(int lamp1=1;lamp1<32;lamp1++){//ȡ�����Եõ����
+	for(int lamp1=1;lamp1<32;lamp1++){//取反可以得到结果
 		if(lampFail10[lamp1]) continue;
 		for(int lamp2=1;lamp2<31;lamp2++){
 			if(lampFail10[lamp2]) continue;
