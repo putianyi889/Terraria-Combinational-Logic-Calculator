@@ -60,12 +60,12 @@ bool try2(unsigned short output){//双灯是否可解
 	bool flag1 = false;
 	for(int lamp1=1;lamp1<32;lamp1++){//不取反可以得到结果
 		if(lampFail01[lamp1]) continue;
-		for(int lamp2=1;lamp2<31;lamp2++){
+		for(int lamp2=1;lamp2<32;lamp2++){
 			if(lampFail01[lamp2]) continue;
 			flag1=true;
 			for(int input=0;input<16;input++){
 				if(Dubious & exp2[input]) continue;
-				if((output & exp2[input] != 0) != (lampValue[lamp1][input] && lampvalue[lamp2][input])){
+				if((output & exp2[input] != 0) != (lampValue[lamp1][input] && lampValue[lamp2][input])){
 					flag1 = false;
 					break;
 				}
@@ -75,16 +75,108 @@ bool try2(unsigned short output){//双灯是否可解
 	}
 	for(int lamp1=1;lamp1<32;lamp1++){//取反可以得到结果
 		if(lampFail10[lamp1]) continue;
-		for(int lamp2=1;lamp2<31;lamp2++){
+		for(int lamp2=1;lamp2<32;lamp2++){
 			if(lampFail10[lamp2]) continue;
 			flag1=true;
 			for(int input=0;input<16;input++){
-				if((output & exp2[input] != 0) == (lampValue[lamp1][input] && lampvalue[lamp2][input])){
+				if(Dubious & exp2[input]) continue;
+				if((output & exp2[input] != 0) == (lampValue[lamp1][input] && lampValue[lamp2][input])){
 					flag1 = false;
 					break;
 				}
 			}
 			if(flag1) return true;
+		}
+	}
+	return false;										   
+}
+
+bool try3AND(unsigned short output){//三灯与门是否可解
+	bool lampFail01[32];//lampValue为0但是output为1
+	bool lampFail10[32];//lampValue为1但是output为0
+	for(int lamp=1;lamp<32;lamp++){
+		lampFail01[lamp] = false;
+		lampFail10[lamp] = false;
+		for(int input=0;input<16;input++){
+			if(Dubious & exp2[input]) continue;
+			if(lampValue[lamp][input] == 0 && output & exp2[input]) lampFail01[lamp] = true;
+			else if(lampValue[lamp][input] && output & exp2[input] == 0) lampFail10[lamp] = true;
+		}
+	}
+	lampFail01[16] = lampFail10[16] = true; //不遍历lamp=16的情况
+	bool flag1 = false;
+	for(int lamp1=1;lamp1<32;lamp1++){//不取反可以得到结果
+		if(lampFail01[lamp1]) continue;
+		for(int lamp2=1;lamp2<32;lamp2++){
+			if(lampFail01[lamp2]) continue;
+			for(int lamp3=1;lamp3<32;lamp3++){
+				if(lampFail01[lamp3]) continue;
+				flag1=true;
+				for(int input=0;input<16;input++){
+					if(Dubious & exp2[input]) continue;
+					if((output & exp2[input] != 0) != (lampValue[lamp1][input] && lampValue[lamp2][input] && lampValue[lamp3][input])){
+						flag1 = false;
+						break;
+					}
+				}
+				if(flag1) return true;
+			}
+		}
+	}
+	for(int lamp1=1;lamp1<32;lamp1++){//取反可以得到结果
+		if(lampFail10[lamp1]) continue;
+		for(int lamp2=1;lamp2<31;lamp2++){
+			if(lampFail10[lamp2]) continue;
+			for(int lamp3=1;lamp3<32;lamp3++){
+				if(lampFail10[lamp3]) continue;
+				flag1=true;
+				for(int input=0;input<16;input++){
+					if(Dubious & exp2[input]) continue;
+					if((output & exp2[input] != 0) == (lampValue[lamp1][input] && lampValue[lamp2][input] && lampValue[lamp3][input])){
+						flag1 = false;
+						break;
+					}
+				}
+				if(flag1) return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool try3XOR(unsigned short output){//三灯异或门是否可解
+	bool lampFail01[32];//lampValue为0但是output为1
+	bool lampFail10[32];//lampValue为1但是output为0
+	for(int lamp=1;lamp<32;lamp++){
+		lampFail01[lamp] = false;
+		lampFail10[lamp] = false;
+		for(int input=0;input<16;input++){
+			if(Dubious & exp2[input]) continue;
+			if(lampValue[lamp][input] == 0 && output & exp2[input]) lampFail01[lamp] = true;
+			else if(lampValue[lamp][input] && output & exp2[input] == 0) lampFail10[lamp] = true;
+		}
+	}
+	lampFail01[16] = lampFail10[16] = true; //不遍历lamp=16的情况
+	bool flag2,flag3;
+	for(int lamp1=1;lamp1<32;lamp1++){
+		for(int lamp2=1;lamp2<32;lamp2++){
+			for(int lamp3=1;lamp3<32;lamp3++){
+				for(int input=0;input<16;input++){
+					if(Dubious & exp2[input]) continue;
+					if(lampValue[lamp1][input]){
+						if(lampValue[lamp2][input]){
+							flag2 = true;
+							break;
+						}
+						if(lampValue[lamp3][input]){
+							flag3 = true;
+							break;
+						}
+					}
+					else if(lampValue[lamp2][input]){
+						
+				}
+			}
 		}
 	}
 }
